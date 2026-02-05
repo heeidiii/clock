@@ -4,135 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notion Flip Clock</title>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap" rel="stylesheet">
     <style>
         body {
-            background-color: #191919; /* Transparent so it blends with Notion */
+            /* This matches Notion's Dark Mode background exactly */
+            background-color: #191919 !important;
             margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: 'Oswald', sans-serif;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
         .clock-container {
             display: flex;
-            gap: 15px; /* Space between the hour and minute cards */
-            position: relative;
+            gap: 20px;
         }
 
-        /* The Black Cards */
-        .card {
-            background-color: #000000;
-            color: #FFFFFF;
-            width: 160px;
+        .flip-card {
+            background-color: #262626; /* Slightly lighter than background for depth */
+            color: white;
+            width: 140px;
             height: 180px;
             border-radius: 12px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 110px;
             position: relative;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .number {
+            font-size: 80px;
+            font-weight: bold;
             line-height: 1;
         }
 
-        /* The "Flip" Line in the middle */
-        .card::after {
+        .label {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 10px;
+            color: #ffffff;
+        }
+
+        /* The horizontal line in the middle of the flip card */
+        .flip-card::after {
             content: '';
             position: absolute;
             top: 50%;
             left: 0;
             width: 100%;
             height: 2px;
-            background-color: #1a1a1a; /* Dark grey line */
-            transform: translateY(-50%);
-        }
-
-        /* AM/PM Label (Bottom Left of Hour Card) */
-        .ampm {
-            position: absolute;
-            bottom: 8px;
-            left: 10px;
-            color: #FFFFFF;
-            font-size: 18px;
-            font-weight: 400;
-            z-index: 2; /* Sit above the flip line */
-            text-transform: uppercase;
-        }
-
-        /* Day Label (Bottom Right of Minute Card) */
-        .day {
-            position: absolute;
-            bottom: 8px;
-            right: 10px;
-            color: #FFFFFF;
-            font-size: 18px;
-            font-weight: 400;
-            z-index: 2;
-            text-transform: uppercase;
-        }
-
-        /* Responsive resizing for smaller Notion columns */
-        @media (max-width: 400px) {
-            .card {
-                width: 120px;
-                height: 140px;
-                font-size: 80px;
-            }
-            .ampm, .day {
-                font-size: 14px;
-            }
+            background: rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
 <body>
 
     <div class="clock-container">
-        <!-- Hour Card -->
-        <div class="card" id="hour-card">
-            <span id="hour-text">12</span>
-            <div class="ampm" id="ampm-text">AM</div>
+        <div class="flip-card">
+            <div class="number" id="hour">04</div>
+            <div class="label" id="ampm">PM</div>
         </div>
-
-        <!-- Minute Card -->
-        <div class="card" id="minute-card">
-            <span id="minute-text">00</span>
-            <div class="day" id="day-text">MONDAY</div>
+        <div class="flip-card">
+            <div class="number" id="minute">10</div>
+            <div class="label" id="day">THURSDAY</div>
         </div>
     </div>
 
     <script>
         function updateClock() {
             const now = new Date();
-            let hours = now.getHours();
-            const minutes = now.getMinutes();
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const dayName = days[now.getDay()];
-
-            // AM/PM Logic
-            const ampm = hours >= 12 ? 'PM' : 'AM';
             
-            // 12-Hour Format Conversion
+            // Format Hours
+            let hours = now.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
             hours = hours ? hours : 12; // the hour '0' should be '12'
+            document.getElementById('hour').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('ampm').textContent = ampm;
 
-            // Add leading zeros (e.g., 9 becomes 09)
-            const hoursStr = hours < 10 ? '0' + hours : hours;
-            const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+            // Format Minutes
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('minute').textContent = minutes;
 
-            // Update HTML
-            document.getElementById('hour-text').textContent = hoursStr;
-            document.getElementById('minute-text').textContent = minutesStr;
-            document.getElementById('ampm-text').textContent = ampm;
-            document.getElementById('day-text').textContent = dayName;
+            // Format Day
+            const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+            document.getElementById('day').textContent = days[now.getDay()];
         }
 
-        // Run immediately then every second
-        updateClock();
         setInterval(updateClock, 1000);
+        updateClock();
     </script>
-
 </body>
 </html>
