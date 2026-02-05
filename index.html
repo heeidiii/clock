@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notion Flip Clock</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: transparent; /* Transparent so it blends with Notion */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .clock-container {
+            display: flex;
+            gap: 15px; /* Space between the hour and minute cards */
+            position: relative;
+        }
+
+        /* The Black Cards */
+        .card {
+            background-color: #000000;
+            color: #FFFFFF;
+            width: 160px;
+            height: 180px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 110px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            line-height: 1;
+        }
+
+        /* The "Flip" Line in the middle */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #1a1a1a; /* Dark grey line */
+            transform: translateY(-50%);
+        }
+
+        /* AM/PM Label (Bottom Left of Hour Card) */
+        .ampm {
+            position: absolute;
+            bottom: 8px;
+            left: 10px;
+            color: #FFFFFF;
+            font-size: 18px;
+            font-weight: 400;
+            z-index: 2; /* Sit above the flip line */
+            text-transform: uppercase;
+        }
+
+        /* Day Label (Bottom Right of Minute Card) */
+        .day {
+            position: absolute;
+            bottom: 8px;
+            right: 10px;
+            color: #FFFFFF;
+            font-size: 18px;
+            font-weight: 400;
+            z-index: 2;
+            text-transform: uppercase;
+        }
+
+        /* Responsive resizing for smaller Notion columns */
+        @media (max-width: 400px) {
+            .card {
+                width: 120px;
+                height: 140px;
+                font-size: 80px;
+            }
+            .ampm, .day {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="clock-container">
+        <!-- Hour Card -->
+        <div class="card" id="hour-card">
+            <span id="hour-text">12</span>
+            <div class="ampm" id="ampm-text">AM</div>
+        </div>
+
+        <!-- Minute Card -->
+        <div class="card" id="minute-card">
+            <span id="minute-text">00</span>
+            <div class="day" id="day-text">MONDAY</div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayName = days[now.getDay()];
+
+            // AM/PM Logic
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            
+            // 12-Hour Format Conversion
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+
+            // Add leading zeros (e.g., 9 becomes 09)
+            const hoursStr = hours < 10 ? '0' + hours : hours;
+            const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+
+            // Update HTML
+            document.getElementById('hour-text').textContent = hoursStr;
+            document.getElementById('minute-text').textContent = minutesStr;
+            document.getElementById('ampm-text').textContent = ampm;
+            document.getElementById('day-text').textContent = dayName;
+        }
+
+        // Run immediately then every second
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+
+</body>
+</html>
