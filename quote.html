@@ -3,7 +3,7 @@
 <head>
     <style>
         body {
-            background-color: #191919; /* Matches Notion Dark Mode */
+            background-color: #191919; /* Notion Dark Mode */
             color: #FFFFFF;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             display: flex;
@@ -12,11 +12,13 @@
             height: 100vh;
             margin: 0;
             text-align: center;
+            cursor: pointer; /* Shows hand icon to indicate it's clickable */
+            user-select: none; /* Prevents highlighting text when clicking */
         }
         .quote-container {
             padding: 20px;
             max-width: 85%;
-            animation: fadeIn 1.5s ease;
+            animation: fadeIn 0.8s ease;
         }
         #quote-text {
             font-size: 20px;
@@ -31,20 +33,26 @@
             letter-spacing: 2px;
             color: #888;
         }
+        /* Subtitle to hint at functionality */
+        .hint {
+            margin-top: 20px;
+            font-size: 10px;
+            color: #444;
+        }
+        
         @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+            0% { opacity: 0; transform: translateY(5px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body>
-    <div class="quote-container">
+<body onclick="updateQuote()"> <div class="quote-container">
         <div id="quote-text"></div>
         <div id="quote-author"></div>
+        <div class="hint">(Click for new quote)</div>
     </div>
 
     <script>
-        // A curated list of Systems, Travel, and Mindset quotes for Zero Chaos Club
         const quotes = [
             { text: "Systems run the business, and people run the systems.", author: "Michael Gerber" },
             { text: "Travel is the only thing you buy that makes you richer.", author: "Anonymous" },
@@ -68,20 +76,24 @@
             { text: "Order guides us to the good life.", author: "Aristotle" }
         ];
 
-        // LOGIC: Selects a quote based on the current Day of the Month (1-31)
-        // This ensures the quote stays the same all day, acting as a daily anchor.
         function updateQuote() {
-            const date = new Date();
-            const dayOfMonth = date.getDate();
-            
-            // Uses the modulo operator (%) to loop through the list if the month has more days than quotes
-            const quoteIndex = (dayOfMonth - 1) % quotes.length;
-            const todaysQuote = quotes[quoteIndex];
+            // Pick a random number between 0 and the total number of quotes
+            const quoteIndex = Math.floor(Math.random() * quotes.length);
+            const randomQuote = quotes[quoteIndex];
 
-            document.getElementById('quote-text').textContent = `"${todaysQuote.text}"`;
-            document.getElementById('quote-author').textContent = `— ${todaysQuote.author}`;
+            // Update the text
+            const container = document.querySelector('.quote-container');
+            
+            // A little trick to restart the fade-in animation
+            container.style.animation = 'none';
+            container.offsetHeight; /* trigger reflow */
+            container.style.animation = 'fadeIn 0.8s ease';
+
+            document.getElementById('quote-text').textContent = `"${randomQuote.text}"`;
+            document.getElementById('quote-author').textContent = `— ${randomQuote.author}`;
         }
 
+        // Run once immediately when the page loads
         updateQuote();
     </script>
 </body>
